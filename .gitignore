@@ -1,0 +1,49 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Test/type/lint cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# macOS
+.DS_Store
+**/.DS_Store
+__MACOSX/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# ML artifacts
+artifacts/
+outputs/
+checkpoints/
+wandb/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# External datasets
+assets/mathvista*/
+assets/mathvista_testmini/
+
+# Local editor files
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.*

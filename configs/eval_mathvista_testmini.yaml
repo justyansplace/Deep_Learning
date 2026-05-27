@@ -1,0 +1,33 @@
+seed: 42
+
+data:
+  eval_manifest: assets/mathvista_testmini/manifest.jsonl
+  split: testmini
+  max_samples: null
+
+model:
+  vision_encoder: google/vit-base-patch16-224
+  language_model: Qwen/Qwen2-0.5B-Instruct
+  adapter_path: artifacts/adapter.safetensors
+  lora_path: null
+
+processor:
+  image_size: 224
+  num_tiles: 1
+  num_image_tokens: 49
+  max_length: 768
+  ignore_index: -100
+
+inference:
+  device: cuda
+  dtype: float16
+  max_new_tokens: 64
+  temperature: 0.0
+  do_sample: false
+  output_path: artifacts/mathvista_predictions.jsonl
+
+evaluation:
+  dataset_name: MathVista
+  subset: testmini
+  answer_mode: mixed
+  note: "MathVista is for evaluation, not training. Do not commit assets/mathvista_testmini/."

@@ -1,0 +1,35 @@
+seed: 42
+track: A_cpu_only
+
+data:
+  train_manifest: assets/toy_math_vqa/manifest.jsonl
+  split: train
+  max_samples: 8
+
+model:
+  vision_encoder: tiny/local-or-mocked
+  language_model: tiny/local-or-mocked
+  freeze_vision: true
+  freeze_llm: true
+  train_adapter: true
+  lora: null
+
+processor:
+  image_size: 224
+  num_tiles: 1
+  tile_overlap: 0.0
+  num_image_tokens: 16
+  max_length: 256
+  ignore_index: -100
+
+trainer:
+  device: cpu
+  dtype: float32
+  num_train_epochs: 1
+  max_steps: 3
+  local_batch_size: 1
+  global_batch_size: 1
+  learning_rate: 0.0005
+  weight_decay: 0.0
+  num_workers: 0
+  save_checkpoint_path: null

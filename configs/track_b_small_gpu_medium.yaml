@@ -1,0 +1,35 @@
+seed: 42
+track: B_small_gpu_medium
+
+data:
+  train_manifest: assets/math_vqa_medium/manifest.jsonl
+  split: train
+  max_samples: 180
+
+model:
+  vision_encoder: google/vit-base-patch16-224
+  language_model: Qwen/Qwen2-0.5B-Instruct
+  freeze_vision: true
+  freeze_llm: true
+  train_adapter: true
+  lora: null
+
+processor:
+  image_size: 224
+  num_tiles: 1
+  tile_overlap: 0.0
+  num_image_tokens: 49
+  max_length: 384
+  ignore_index: -100
+
+trainer:
+  device: cuda
+  dtype: float16
+  num_train_epochs: 1
+  max_steps: 300
+  local_batch_size: 1
+  global_batch_size: 8
+  learning_rate: 0.0002
+  weight_decay: 0.0
+  num_workers: 0
+  save_checkpoint_path: checkpoints/adapter_medium.pt

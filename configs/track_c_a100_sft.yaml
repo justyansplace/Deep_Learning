@@ -1,0 +1,49 @@
+seed: 42
+track: C_a100_20gb_sft
+
+data:
+  train_manifest: assets/toy_math_vqa/manifest.jsonl
+  split: train
+  max_samples: null
+
+model:
+  vision_encoder: google/vit-base-patch16-224
+  language_model: Qwen/Qwen2-0.5B-Instruct
+  freeze_vision: true
+  freeze_llm: true
+  train_adapter: true
+  load_adapter_path: artifacts/adapter_pretrain.safetensors
+  lora:
+    enabled: true
+    rank: 64
+    alpha: 128
+    dropout: 0.05
+    target_modules:
+      - q_proj
+      - k_proj
+      - v_proj
+      - o_proj
+      - gate_proj
+      - up_proj
+      - down_proj
+
+processor:
+  image_size: 224
+  num_tiles: 4
+  tile_overlap: 0.15
+  num_image_tokens: 49
+  max_length: 768
+  ignore_index: -100
+
+trainer:
+  device: cuda
+  dtype: bfloat16
+  num_train_epochs: 1
+  max_steps: 2000
+  local_batch_size: 1
+  global_batch_size: 32
+  learning_rate: 0.0001
+  weight_decay: 0.01
+  gradient_checkpointing: true
+  num_workers: 4
+  save_checkpoint_path: artifacts/lora_sft
