@@ -5,57 +5,72 @@
 Выбранный трек:
 
 ```text
-A / B / C
+B
 ```
 
 ## Что реализовано
 
-- [ ] dataset.py
-- [ ] processor.py
-- [ ] model.py
-- [ ] train.py
-- [ ] benchmark.py
+- [x] dataset.py
+- [x] processor.py
+- [x] model.py
+- [x] train.py
+- [x] benchmark.py
 
 ## Конфигурация
 
 ```text
-config path:
-seed:
-device:
-dtype:
-max_steps:
-batch size:
+config path: configs/track_b_small_gpu_medium.yaml
+seed: 42
+device: cuda (NVIDIA A100-SXM4-80GB, MIG 2g.20gb)
+dtype: float32 (в конфиге float16; модель грузится в float32 — стабильнее и по VRAM проходит)
+max_steps: 300
+batch size: local 1, global 8 (gradient accumulation = 8)
 ```
 
 ## Результаты
 
 ```text
-public tests:
-train loss:
-benchmark accuracy:
+public tests: 14 passed (pytest -q tests_public)
+train loss: на старте высокий, к концу ~0.39 
+benchmark accuracy (medium dev, 40 примеров):
+  overall:             0.275
+  algebra:             0.40
+  coordinate_geometry: 0.20
+  geometry:            0.267
+  linear_algebra:      0.20
+  plots:               0.30
 ```
 
 ## Использованные ресурсы
 
 ```text
-CPU/GPU:
-VRAM:
-время обучения:
+CPU/GPU: NVIDIA A100-SXM4-80GB (MIG-слайс 2g.20gb)
+VRAM: ~20 GB доступно (vision encoder и LLM заморожены, обучается только adapter)
+время обучения: ~несколько минут на 300 шагов (большая часть времени — первичная загрузка ViT+Qwen с HF)
 ```
 
 ## Анализ ошибок
 
 Приведите 3 ошибки модели:
 
-1. ...
-2. ...
-3. ...
+1. medium_dev_0000 (algebra): «y=1x+3, чему равен y при x=2?» — правильный D(5), модель ответила C(2)
+2. medium_dev_0006 (linear_algebra): «det(A) для матрицы 2x2» — правильный C(0), модель ответила A(1)
+3. medium_dev_0011 (geometry): «площадь прямоугольника 3x5» — правильный A(15), модель ответила B(14)
+
+Вывод по ошибкам такой -- train loss заметно снизился (т.к. адаптер подстраивается под обучающие ответы), но dev-accuracy около случайный. За 300 шагов реализованный адаптер не научился грунтить числовую информацию из изображения. Для роста качества, я предполагаю, нужно больше шагов и больше данных и еще реальный тайлинг изображений
 
 ## Комментарии
 
 Что оказалось самым сложным, что бы вы улучшили?
 
+```text
+Сложнее всего был запуск на кластере: на ноде закрыт GitHub (код заливал zipником),
+а дефолтный torch не совпал с драйвером CUDA 12.8 — пришлось брать подходящую сборку 
+По коду — следить за совпадением числа <image>-токенов и визуальных эмбеддингов и за маской labels
+Улучшил бы: реальный тайлинг, сохранение/загрузку эмбеддингов спецтокенов и сделал бы больше шагов
+```
 
 ## Критерии оценивания
 
 См. файл [`GRADING.md`](GRADING.md).
+
