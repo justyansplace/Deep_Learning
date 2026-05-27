@@ -65,7 +65,9 @@ def compute_accuracy(rows: list[dict[str, Any]]) -> dict[str, float]:
 
 def run_benchmark(config: dict[str, Any], toy: bool = False) -> dict[str, float]:
     """Run evaluation loop."""
-    from hw.train import build_model_from_config
+    from hw.train import build_model_from_config, set_seed
+
+    set_seed(int(config.get("seed", 42)))
 
     data_cfg = config["data"]
     proc_cfg = config["processor"]

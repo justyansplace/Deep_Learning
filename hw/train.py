@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import functools
 import random
 import re
 from pathlib import Path
@@ -180,6 +181,10 @@ def build_model_from_config(config):
     return model, processor, tokenizer
 
 
+def collate_samples(batch, processor):
+    return processor.collate([processor(s) for s in batch])
+
+
 def run_training(config: dict[str, Any], fast_train: bool = False) -> None:
     """Main training entry point.
 
@@ -208,7 +213,7 @@ def run_training(config: dict[str, Any], fast_train: bool = False) -> None:
         batch_size=trainer_cfg["local_batch_size"],
         shuffle=True,
         num_workers=trainer_cfg.get("num_workers", 0),
-        collate_fn=lambda b: processor.collate([processor(s) for s in b]))
+        collate_fn=functools.partial(collate_samples, processor=processor))
 
     optimizer = torch.optim.AdamW(
         [p for p in model.parameters() if p.requires_grad],
